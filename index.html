@@ -1,324 +1,375 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, X as CloseIcon } from 'lucide-react';
-
-// --- Categorías de Bodas ---
-const categories = [
-  { id: 'all', label: 'PORTAFOLIO' }, 
-  { id: 'save-the-date', label: 'SAVE THE DATE' },
-  { id: 'getting-ready', label: 'GETTING READY' },
-  { id: 'ceremonia', label: 'CEREMONIA' },
-  { id: 'sesion-novios', label: 'SESIÓN DE NOVIOS' },
-  { id: 'first-look', label: 'FIRST LOOK' },
-  { id: 'first-touch', label: 'FIRST TOUCH' },
-  { id: 'fiesta', label: 'FIESTA' },
-  { id: 'detalles', label: 'DETALLES' },
-];
-
-// --- Lista de Imágenes ---
-// Nota: Todas las categorías se han cambiado a 'portfolio' para que solo aparezcan 
-// en el menú principal "PORTAFOLIO" (id: 'all') por el momento.
-const portfolioImages = [
-  { id: 101, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016422/sart-insta-58__2_eswhfn.jpg', alt: 'Boda' },
-  { id: 102, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016418/m_i_-_web_42_egrpli.jpg', alt: 'Boda' },
-  { id: 103, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016406/g_a-164_xg2hvc.jpg', alt: 'Boda' },
-  { id: 104, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016399/boda-y_o-368_shmyou.jpg', alt: 'Boda' },
-  { id: 105, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016362/boda-s_b-71_wbolfo.jpg', alt: 'Boda' },
-  { id: 106, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-94_suupwt.jpg', alt: 'Boda' },
-  { id: 107, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016309/boda-e_a-167_vzfegp.jpg', alt: 'Boda' },
-  { id: 108, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016263/boda-a_a-383_hyczdt.jpg', alt: 'Boda' },
-  { id: 109, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016248/a_r_-_web_28_ssskez.jpg', alt: 'Boda' },
-  { id: 110, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016421/sart-insta-56__2_fstyrc.jpg', alt: 'Boda' },
-  { id: 111, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016417/m_i_-_web_41_mnk3av.jpg', alt: 'Boda' },
-  { id: 112, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016404/g_a-159_wfml1n.jpg', alt: 'Boda' },
-  { id: 113, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016400/boda-y_o-369_xsasah.jpg', alt: 'Boda' },
-  { id: 114, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016363/boda-s_b-92_hrmjwj.jpg', alt: 'Boda' },
-  { id: 115, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-101_g2nnrg.jpg', alt: 'Boda' },
-  { id: 116, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016308/boda-e_a-156_uttuj5.jpg', alt: 'Boda' },
-  { id: 117, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016262/boda-a_a-381_waxzuc.jpg', alt: 'Boda' },
-  { id: 118, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016247/a_r_-_web_26_xj21xx.jpg', alt: 'Boda' },
-  { id: 119, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016416/m_i_-_web_34_z4i72f.jpg', alt: 'Boda' },
-  { id: 120, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016403/g_a-153_cjlrxk.jpg', alt: 'Boda' },
-  { id: 121, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016398/boda-y_o-317_o5b3jq.jpg', alt: 'Boda' },
-  { id: 122, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016363/boda-s_b-100_fshi1k.jpg', alt: 'Boda' },
-  { id: 123, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-92_g3ntau.jpg', alt: 'Boda' },
-  { id: 124, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016306/boda-e_a-151_wecnsa.jpg', alt: 'Boda' },
-  { id: 125, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016260/boda-a_a-371_be2yvy.jpg', alt: 'Boda' },
-  { id: 126, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016199/a_r_-_web_23_kspyn0.jpg', alt: 'Boda' },
-  { id: 127, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016415/m_i_-_web_28_tuqo63.jpg', alt: 'Boda' },
-  { id: 128, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016402/g_a-131_ibwmmk.jpg', alt: 'Boda' },
-  { id: 129, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016383/boda-y_o-316_ampxjd.jpg', alt: 'Boda' },
-  { id: 130, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016362/boda-s_b-83_va5bt3.jpg', alt: 'Boda' },
-  { id: 131, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016327/boda-l_e-91_qqy2tl.jpg', alt: 'Boda' },
-  { id: 132, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016306/boda-e_a-144_kasaur.jpg', alt: 'Boda' },
-  { id: 133, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016259/boda-a_a-339_qqwjpx.jpg', alt: 'Boda' },
-  { id: 134, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016192/a_r_-_web_21_vgdcgf.jpg', alt: 'Boda' },
-  { id: 135, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016412/m_i_-_web_20_oocmpm.jpg', alt: 'Boda' },
-  { id: 136, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016402/g_a-145_s5wekw.jpg', alt: 'Boda' },
-  { id: 137, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016382/boda-y_o-307_e0fsm4.jpg', alt: 'Boda' },
-  { id: 138, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016360/boda-s_b-49_eueznz.jpg', alt: 'Boda' },
-  { id: 139, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016325/boda-l_e-87_opsd5v.jpg', alt: 'Boda' },
-  { id: 140, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016305/boda-e_a-143_sgom0z.jpg', alt: 'Boda' },
-  { id: 141, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016259/boda-a_a-327_camil7.jpg', alt: 'Boda' },
-  { id: 142, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016192/a_r_-_web_15_ypgf21.jpg', alt: 'Boda' },
-  { id: 143, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016412/m_i_-_web_8_seacsu.jpg', alt: 'Boda' },
-  { id: 144, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016406/k_j_-_web_7_zg8m0b.jpg', alt: 'Boda' },
-  { id: 145, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016380/boda-y_o-304_nwvxbv.jpg', alt: 'Boda' },
-  { id: 146, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016359/boda-s_b-33_f0lehp.jpg', alt: 'Boda' },
-  { id: 147, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016325/boda-l_e-84_agcigb.jpg', alt: 'Boda' },
-  { id: 148, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016305/boda-e_a-138_vgkuic.jpg', alt: 'Boda' },
-  { id: 149, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016258/boda-a_a-324_aky3tz.jpg', alt: 'Boda' },
-  { id: 150, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016191/a_r_-_web_1_ninasj.jpg', alt: 'Boda' },
-  { id: 151, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016380/boda-y_o-275_mgwptd.jpg', alt: 'Boda' },
-  { id: 152, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016359/boda-l_e-112_uqx22l.jpg', alt: 'Boda' },
-  { id: 153, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016379/boda-y_o-266_ovg14c.jpg', alt: 'Boda' },
-  { id: 154, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016258/boda-a_a-272_y3wav3.jpg', alt: 'Boda' },
-  { id: 155, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016324/boda-l_e-75_rsxzrk.jpg', alt: 'Boda' },
-  { id: 156, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016257/boda-a_a-127_a1flws.jpg', alt: 'Boda' },
-  { id: 157, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016377/boda-y_o-251_ryalie.jpg', alt: 'Boda' },
-  { id: 158, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016376/boda-y_o-225_fvy0zb.jpg', alt: 'Boda' },
-  { id: 159, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016312/boda-l_e-71_cztszy.jpg', alt: 'Boda' },
-  { id: 160, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016376/boda-y_o-199_ebzfqd.jpg', alt: 'Boda' },
-  { id: 161, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016312/boda-l_e-38_tarski.jpg', alt: 'Boda' },
-  { id: 162, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016256/boda-a_a-119_rhohn6.jpg', alt: 'Boda' },
-  { id: 163, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016374/boda-y_o-164_drgqec.jpg', alt: 'Boda' },
-  { id: 164, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016310/boda-l_e-36_jtkxfi.jpg', alt: 'Boda' },
-  { id: 165, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016373/boda-y_o-155_bwydz9.jpg', alt: 'Boda' },
-  { id: 166, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016373/boda-y_o-141_p7cr80.jpg', alt: 'Boda' },
-  { id: 167, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016310/boda-l_e-34_rb4lsl.jpg', alt: 'Boda' },
-  { id: 168, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016255/boda-a_a-123_rua0ln.jpg', alt: 'Boda' },
-  { id: 169, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016370/boda-y_o-130_z5t4eh.jpg', alt: 'Boda' },
-  { id: 170, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016254/boda-a_a-107_gbhizu.jpg', alt: 'Boda' },
-  { id: 171, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-86_vnwekf.jpg', alt: 'Boda' },
-  { id: 172, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016254/boda-a_a-114_svfar7.jpg', alt: 'Boda' },
-  { id: 173, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-67_gxh1tf.jpg', alt: 'Boda' },
-  { id: 174, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-69_qjmo4n.jpg', alt: 'Boda' },
-  { id: 175, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016251/boda-a_a-98_onqupl.jpg', alt: 'Boda' },
-  { id: 176, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016367/boda-y_o-31_ge3xpp.jpg', alt: 'Boda' },
-  { id: 177, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016366/boda-y_o-7_ot3jgj.jpg', alt: 'Boda' },
-  { id: 178, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016251/boda-a_a-105_agbktk.jpg', alt: 'Boda' },
-  { id: 179, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016249/boda-a_a-70_xqbszs.jpg', alt: 'Boda' },
-  { id: 180, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016249/boda-a_a-46_nwvt7r.jpg', alt: 'Boda' },
-  { id: 181, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016248/boda-a_a-12_vflwae.jpg', alt: 'Boda' },
-];
-
-const App = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState(null);
-  const [filteredImages, setFilteredImages] = useState(portfolioImages);
-
-  // Filtrar imágenes cuando cambia la categoría
-  useEffect(() => {
-    if (activeCategory === 'all') {
-      setFilteredImages(portfolioImages);
-    } else {
-      setFilteredImages(portfolioImages.filter(img => img.category === activeCategory));
-    }
-  }, [activeCategory]);
-
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
-  // --- Funciones para Navegación en Lightbox ---
-  const handleNextImage = useCallback((e) => {
-    e?.stopPropagation();
-    if (!lightboxImage) return;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finite Estudio | Saúl Díaz</title>
     
-    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
-    const nextIndex = (currentIndex + 1) % filteredImages.length;
-    setLightboxImage(filteredImages[nextIndex]);
-  }, [lightboxImage, filteredImages]);
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tipografía Glacial Indifference -->
+    <link href="https://fonts.cdnfonts.com/css/glacial-indifference" rel="stylesheet">
 
-  const handlePrevImage = useCallback((e) => {
-    e?.stopPropagation();
-    if (!lightboxImage) return;
-
-    const currentIndex = filteredImages.findIndex(img => img.id === lightboxImage.id);
-    const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
-    setLightboxImage(filteredImages[prevIndex]);
-  }, [lightboxImage, filteredImages]);
-
-  // Manejar Teclado (Flechas y Escape)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!lightboxImage) return;
-      
-      if (e.key === 'ArrowRight') handleNextImage();
-      if (e.key === 'ArrowLeft') handlePrevImage();
-      if (e.key === 'Escape') setLightboxImage(null);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxImage, handleNextImage, handlePrevImage]);
-
-  return (
-    <>
-      {/* Importamos Glacial Indifference desde CDN Fonts */}
-      <style>{`
-        @import url('https://fonts.cdnfonts.com/css/glacial-indifference');
-        
+    <!-- Estilos Personalizados -->
+    <style>
         body, html {
-          font-family: 'Glacial Indifference', sans-serif;
+            font-family: 'Glacial Indifference', sans-serif;
+            scroll-behavior: smooth;
         }
-        
-        /* Ajuste fino para que la fuente se vea mejor en negrita */
         .font-bold {
-          font-weight: 700;
+            font-weight: 700;
         }
-      `}</style>
+        /* Transiciones suaves para el lightbox */
+        .lightbox-enter {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .lightbox-enter-active {
+            opacity: 1;
+        }
+        /* Ocultar barra de scroll en lightbox pero permitir funcionalidad */
+        .no-scroll {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
 
-      <div className="flex flex-col md:flex-row min-h-screen bg-white text-gray-900">
+    <div class="flex flex-col md:flex-row min-h-screen">
         
-        {/* --- Sidebar / Navigation Area --- */}
-        <aside className={`
-          fixed inset-y-0 left-0 z-40 w-64 bg-white p-8 transform transition-transform duration-300 ease-in-out border-r border-transparent md:border-gray-100 md:translate-x-0 
-          md:sticky md:top-0 md:h-screen md:overflow-y-auto
-          md:w-1/4 lg:w-1/5 xl:w-64 flex flex-col justify-between
-          ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
-        `}>
-          {/* Logo Section */}
-          <div className="mt-8 md:mt-0 mb-12 flex justify-center md:justify-start">
-            <img 
-              src="https://res.cloudinary.com/drrhn6t1c/image/upload/v1752514553/logo-FE-fondoblanco_c8tlxc.png" 
-              alt="Saúl Díaz Logo" 
-              className="w-40 md:w-48 object-contain"
-            />
-          </div>
-
-          {/* Navigation Links (Updated: Only Categories) */}
-          <nav className="flex-grow flex flex-col space-y-4 items-center md:items-start text-sm tracking-widest text-gray-600">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  setActiveCategory(cat.id);
-                  setIsMobileMenuOpen(false);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className={`hover:text-black transition-colors uppercase text-left w-full md:w-auto py-1 ${activeCategory === cat.id ? 'text-black font-bold border-b-2 border-black inline-block md:border-none' : ''}`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </nav>
-
-          {/* Footer / Socials (Updated: Text Links) */}
-          <div className="mt-12 text-center md:text-left">
-            <div className="flex flex-col space-y-2 mb-6 text-sm tracking-widest text-gray-600">
-              <a 
-                href="https://www.instagram.com/finite.estudio/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-black transition-colors uppercase font-bold"
-              >
-                Instagram
-              </a>
-              <a 
-                href="https://wa.me/526643372791" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-black transition-colors uppercase font-bold"
-              >
-                Whatsapp
-              </a>
+        <!-- --- Sidebar / Menú --- -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white p-8 transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-transparent md:border-gray-100 md:translate-x-0 md:sticky md:top-0 md:h-screen md:overflow-y-auto md:w-1/4 lg:w-1/5 xl:w-64 flex flex-col justify-between shadow-2xl md:shadow-none">
+            
+            <!-- Logo -->
+            <div class="mt-8 md:mt-0 mb-12 flex justify-center md:justify-start">
+                <img src="https://res.cloudinary.com/drrhn6t1c/image/upload/v1752514553/logo-FE-fondoblanco_c8tlxc.png" alt="Finite Estudio Logo" class="w-40 md:w-48 object-contain">
             </div>
-            <p className="text-[11px] text-gray-400 uppercase tracking-wider font-bold">
-              &copy; 2026 Finite estudio
-            </p>
-          </div>
+
+            <!-- Navegación -->
+            <nav id="menu-container" class="flex-grow flex flex-col space-y-4 items-center md:items-start text-sm tracking-widest text-gray-600">
+                <!-- Los botones se generan con JS -->
+            </nav>
+
+            <!-- Footer / Contacto -->
+            <div class="mt-12 text-center md:text-left">
+                <div class="flex flex-col space-y-2 mb-6 text-sm tracking-widest text-gray-600">
+                    <a href="https://www.instagram.com/finite.estudio/" target="_blank" rel="noopener noreferrer" class="hover:text-black transition-colors uppercase font-bold">Instagram</a>
+                    <a href="https://wa.me/526643372791" target="_blank" rel="noopener noreferrer" class="hover:text-black transition-colors uppercase font-bold">Whatsapp</a>
+                </div>
+                <p class="text-[11px] text-gray-400 uppercase tracking-wider font-bold">
+                    &copy; 2026 Finite estudio
+                </p>
+            </div>
         </aside>
 
-        {/* --- Mobile Header Bar (Visible only on small screens) --- */}
-        <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-white z-30 flex items-center justify-between px-6 border-b border-gray-100 shadow-sm">
-          <div className="h-full flex items-center py-2">
-             <img 
-              src="https://res.cloudinary.com/drrhn6t1c/image/upload/v1752514553/logo-FE-fondoblanco_c8tlxc.png" 
-              alt="Saúl Díaz Logo" 
-              className="h-full max-h-12 w-auto object-contain"
-            />
-          </div>
-          <button onClick={toggleMobileMenu} className="p-2 text-gray-800">
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+        <!-- --- Header Móvil --- -->
+        <div class="md:hidden fixed top-0 left-0 right-0 h-20 bg-white z-30 flex items-center justify-between px-6 border-b border-gray-100 shadow-sm">
+            <div class="h-full flex items-center py-2">
+                <img src="https://res.cloudinary.com/drrhn6t1c/image/upload/v1752514553/logo-FE-fondoblanco_c8tlxc.png" alt="Finite Estudio Logo" class="h-full max-h-12 w-auto object-contain">
+            </div>
+            <button id="mobile-menu-btn" class="p-2 text-gray-800 focus:outline-none">
+                <!-- Icono Menu (SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+            </button>
         </div>
 
-        {/* --- Overlay for mobile menu --- */}
-        {isMobileMenuOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
+        <!-- Overlay Móvil -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
 
-        {/* --- Main Content / Gallery --- */}
-        <main className="flex-1 bg-gray-50 pt-20 md:pt-0 min-h-screen">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[1px] md:gap-[2px]">
-            {filteredImages.map((image) => (
-              <div 
-                key={image.id} 
-                className="relative aspect-[4/5] group overflow-hidden bg-gray-200 cursor-pointer"
-                onClick={() => setLightboxImage(image)}
-              >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-95 group-hover:opacity-100"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300"></div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Empty state if no images found */}
-          {filteredImages.length === 0 && (
-            <div className="flex items-center justify-center h-full text-gray-400 uppercase tracking-widest text-lg">
-              Pronto añadiré más historias aquí.
+        <!-- --- Galería Principal --- -->
+        <main class="flex-1 bg-gray-50 pt-20 md:pt-0 min-h-screen">
+            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[1px] md:gap-[2px]">
+                <!-- Las imágenes se generan con JS -->
             </div>
-          )}
+            
+            <!-- Estado Vacío -->
+            <div id="empty-state" class="hidden flex items-center justify-center h-full min-h-[50vh] text-gray-400 uppercase tracking-widest text-lg">
+                Pronto añadiré más historias aquí.
+            </div>
         </main>
 
-        {/* --- Lightbox Modal (Navegable y sin textos) --- */}
-        {lightboxImage && (
-          <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4">
+    </div>
+
+    <!-- --- Lightbox (Visor) --- -->
+    <div id="lightbox" class="fixed inset-0 z-50 bg-white hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        
+        <!-- Botón Cerrar -->
+        <button id="lightbox-close" class="absolute top-6 right-6 p-2 text-gray-800 hover:text-black z-50 cursor-pointer focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+
+        <!-- Navegación Izquierda -->
+        <button id="lightbox-prev" class="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-black z-50 transition-colors focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <!-- Imagen Central -->
+        <div class="w-full h-full flex items-center justify-center px-8 md:px-16">
+            <img id="lightbox-img" src="" alt="Finite estudio" class="max-w-full max-h-full object-contain shadow-2xl select-none">
+        </div>
+
+        <!-- Navegación Derecha -->
+        <button id="lightbox-next" class="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-black z-50 transition-colors focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+    </div>
+
+    <!-- --- Lógica JavaScript --- -->
+    <script>
+        // --- Datos ---
+        const categories = [
+            { id: 'all', label: 'PORTAFOLIO' }, 
+            { id: 'save-the-date', label: 'SAVE THE DATE' },
+            { id: 'getting-ready', label: 'GETTING READY' },
+            { id: 'ceremonia', label: 'CEREMONIA' },
+            { id: 'sesion-novios', label: 'SESIÓN DE NOVIOS' },
+            { id: 'first-look', label: 'FIRST LOOK' },
+            { id: 'first-touch', label: 'FIRST TOUCH' },
+            { id: 'fiesta', label: 'FIESTA' },
+            { id: 'detalles', label: 'DETALLES' },
+        ];
+
+        const portfolioImages = [
+            { id: 101, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016422/sart-insta-58__2_eswhfn.jpg', alt: 'Boda' },
+            { id: 102, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016418/m_i_-_web_42_egrpli.jpg', alt: 'Boda' },
+            { id: 103, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016406/g_a-164_xg2hvc.jpg', alt: 'Boda' },
+            { id: 104, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016399/boda-y_o-368_shmyou.jpg', alt: 'Boda' },
+            { id: 105, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016362/boda-s_b-71_wbolfo.jpg', alt: 'Boda' },
+            { id: 106, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-94_suupwt.jpg', alt: 'Boda' },
+            { id: 107, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016309/boda-e_a-167_vzfegp.jpg', alt: 'Boda' },
+            { id: 108, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016263/boda-a_a-383_hyczdt.jpg', alt: 'Boda' },
+            { id: 109, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016248/a_r_-_web_28_ssskez.jpg', alt: 'Boda' },
+            { id: 110, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016421/sart-insta-56__2_fstyrc.jpg', alt: 'Boda' },
+            { id: 111, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016417/m_i_-_web_41_mnk3av.jpg', alt: 'Boda' },
+            { id: 112, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016404/g_a-159_wfml1n.jpg', alt: 'Boda' },
+            { id: 113, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016400/boda-y_o-369_xsasah.jpg', alt: 'Boda' },
+            { id: 114, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016363/boda-s_b-92_hrmjwj.jpg', alt: 'Boda' },
+            { id: 115, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-101_g2nnrg.jpg', alt: 'Boda' },
+            { id: 116, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016308/boda-e_a-156_uttuj5.jpg', alt: 'Boda' },
+            { id: 117, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016262/boda-a_a-381_waxzuc.jpg', alt: 'Boda' },
+            { id: 118, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016247/a_r_-_web_26_xj21xx.jpg', alt: 'Boda' },
+            { id: 119, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016416/m_i_-_web_34_z4i72f.jpg', alt: 'Boda' },
+            { id: 120, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016403/g_a-153_cjlrxk.jpg', alt: 'Boda' },
+            { id: 121, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016398/boda-y_o-317_o5b3jq.jpg', alt: 'Boda' },
+            { id: 122, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016363/boda-s_b-100_fshi1k.jpg', alt: 'Boda' },
+            { id: 123, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016356/boda-l_e-92_g3ntau.jpg', alt: 'Boda' },
+            { id: 124, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016306/boda-e_a-151_wecnsa.jpg', alt: 'Boda' },
+            { id: 125, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016260/boda-a_a-371_be2yvy.jpg', alt: 'Boda' },
+            { id: 126, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016199/a_r_-_web_23_kspyn0.jpg', alt: 'Boda' },
+            { id: 127, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016415/m_i_-_web_28_tuqo63.jpg', alt: 'Boda' },
+            { id: 128, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016402/g_a-131_ibwmmk.jpg', alt: 'Boda' },
+            { id: 129, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016383/boda-y_o-316_ampxjd.jpg', alt: 'Boda' },
+            { id: 130, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016362/boda-s_b-83_va5bt3.jpg', alt: 'Boda' },
+            { id: 131, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016327/boda-l_e-91_qqy2tl.jpg', alt: 'Boda' },
+            { id: 132, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016306/boda-e_a-144_kasaur.jpg', alt: 'Boda' },
+            { id: 133, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016259/boda-a_a-339_qqwjpx.jpg', alt: 'Boda' },
+            { id: 134, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016192/a_r_-_web_21_vgdcgf.jpg', alt: 'Boda' },
+            { id: 135, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016412/m_i_-_web_20_oocmpm.jpg', alt: 'Boda' },
+            { id: 136, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016402/g_a-145_s5wekw.jpg', alt: 'Boda' },
+            { id: 137, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016382/boda-y_o-307_e0fsm4.jpg', alt: 'Boda' },
+            { id: 138, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016360/boda-s_b-49_eueznz.jpg', alt: 'Boda' },
+            { id: 139, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016325/boda-l_e-87_opsd5v.jpg', alt: 'Boda' },
+            { id: 140, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016305/boda-e_a-143_sgom0z.jpg', alt: 'Boda' },
+            { id: 141, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016259/boda-a_a-327_camil7.jpg', alt: 'Boda' },
+            { id: 142, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016192/a_r_-_web_15_ypgf21.jpg', alt: 'Boda' },
+            { id: 143, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016412/m_i_-_web_8_seacsu.jpg', alt: 'Boda' },
+            { id: 144, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016406/k_j_-_web_7_zg8m0b.jpg', alt: 'Boda' },
+            { id: 145, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016380/boda-y_o-304_nwvxbv.jpg', alt: 'Boda' },
+            { id: 146, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016359/boda-s_b-33_f0lehp.jpg', alt: 'Boda' },
+            { id: 147, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016325/boda-l_e-84_agcigb.jpg', alt: 'Boda' },
+            { id: 148, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016305/boda-e_a-138_vgkuic.jpg', alt: 'Boda' },
+            { id: 149, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016258/boda-a_a-324_aky3tz.jpg', alt: 'Boda' },
+            { id: 150, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016191/a_r_-_web_1_ninasj.jpg', alt: 'Boda' },
+            { id: 151, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016380/boda-y_o-275_mgwptd.jpg', alt: 'Boda' },
+            { id: 152, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016359/boda-l_e-112_uqx22l.jpg', alt: 'Boda' },
+            { id: 153, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016379/boda-y_o-266_ovg14c.jpg', alt: 'Boda' },
+            { id: 154, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016258/boda-a_a-272_y3wav3.jpg', alt: 'Boda' },
+            { id: 155, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016324/boda-l_e-75_rsxzrk.jpg', alt: 'Boda' },
+            { id: 156, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016257/boda-a_a-127_a1flws.jpg', alt: 'Boda' },
+            { id: 157, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016377/boda-y_o-251_ryalie.jpg', alt: 'Boda' },
+            { id: 158, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016376/boda-y_o-225_fvy0zb.jpg', alt: 'Boda' },
+            { id: 159, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016312/boda-l_e-71_cztszy.jpg', alt: 'Boda' },
+            { id: 160, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016376/boda-y_o-199_ebzfqd.jpg', alt: 'Boda' },
+            { id: 161, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016312/boda-l_e-38_tarski.jpg', alt: 'Boda' },
+            { id: 162, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016256/boda-a_a-119_rhohn6.jpg', alt: 'Boda' },
+            { id: 163, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016374/boda-y_o-164_drgqec.jpg', alt: 'Boda' },
+            { id: 164, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016310/boda-l_e-36_jtkxfi.jpg', alt: 'Boda' },
+            { id: 165, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016373/boda-y_o-155_bwydz9.jpg', alt: 'Boda' },
+            { id: 166, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016373/boda-y_o-141_p7cr80.jpg', alt: 'Boda' },
+            { id: 167, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016310/boda-l_e-34_rb4lsl.jpg', alt: 'Boda' },
+            { id: 168, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016255/boda-a_a-123_rua0ln.jpg', alt: 'Boda' },
+            { id: 169, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016370/boda-y_o-130_z5t4eh.jpg', alt: 'Boda' },
+            { id: 170, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016254/boda-a_a-107_gbhizu.jpg', alt: 'Boda' },
+            { id: 171, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-86_vnwekf.jpg', alt: 'Boda' },
+            { id: 172, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016254/boda-a_a-114_svfar7.jpg', alt: 'Boda' },
+            { id: 173, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-67_gxh1tf.jpg', alt: 'Boda' },
+            { id: 174, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016369/boda-y_o-69_qjmo4n.jpg', alt: 'Boda' },
+            { id: 175, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016251/boda-a_a-98_onqupl.jpg', alt: 'Boda' },
+            { id: 176, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016367/boda-y_o-31_ge3xpp.jpg', alt: 'Boda' },
+            { id: 177, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016366/boda-y_o-7_ot3jgj.jpg', alt: 'Boda' },
+            { id: 178, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016251/boda-a_a-105_agbktk.jpg', alt: 'Boda' },
+            { id: 179, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016249/boda-a_a-70_xqbszs.jpg', alt: 'Boda' },
+            { id: 180, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016249/boda-a_a-46_nwvt7r.jpg', alt: 'Boda' },
+            { id: 181, category: 'portfolio', src: 'https://res.cloudinary.com/drrhn6t1c/image/upload/v1764016248/boda-a_a-12_vflwae.jpg', alt: 'Boda' },
+        ];
+
+        // --- Estado ---
+        let activeCategory = 'all';
+        let filteredImages = [...portfolioImages];
+        let currentImageIndex = null;
+        let isMobileMenuOpen = false;
+
+        // --- Elementos del DOM ---
+        const galleryGrid = document.getElementById('gallery-grid');
+        const menuContainer = document.getElementById('menu-container');
+        const emptyState = document.getElementById('empty-state');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuIcon = mobileMenuBtn.querySelector('svg');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const lightboxNext = document.getElementById('lightbox-next');
+        const lightboxPrev = document.getElementById('lightbox-prev');
+
+        // --- Renderizado ---
+
+        function renderMenu() {
+            menuContainer.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.textContent = cat.label;
+                btn.className = `hover:text-black transition-colors uppercase text-left w-full md:w-auto py-1 ${activeCategory === cat.id ? 'text-black font-bold border-b-2 border-black inline-block md:border-none' : ''}`;
+                btn.onclick = () => {
+                    activeCategory = cat.id;
+                    renderMenu();
+                    filterImages();
+                    closeMobileMenu();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                menuContainer.appendChild(btn);
+            });
+        }
+
+        function renderGallery() {
+            galleryGrid.innerHTML = '';
             
-            {/* Botón Cerrar */}
-            <button 
-              onClick={() => setLightboxImage(null)}
-              className="absolute top-6 right-6 p-2 text-gray-800 hover:text-black z-50 cursor-pointer"
-            >
-              <CloseIcon size={32} strokeWidth={1} />
-            </button>
-            
-            {/* Navegación Izquierda */}
-            <button
-              onClick={handlePrevImage}
-              className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-black z-50 transition-colors"
-            >
-              <ChevronLeft size={48} strokeWidth={0.5} />
-            </button>
+            if (filteredImages.length === 0) {
+                galleryGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                galleryGrid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
 
-            {/* Imagen Central */}
-            <div className="w-full h-full flex items-center justify-center px-8 md:px-16">
-              <img 
-                src={lightboxImage.src} 
-                alt="Finite estudio" 
-                className="max-w-full max-h-full object-contain shadow-2xl select-none"
-              />
-            </div>
+                filteredImages.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'relative aspect-[4/5] group overflow-hidden bg-gray-200 cursor-pointer';
+                    div.onclick = () => openLightbox(index);
 
-            {/* Navegación Derecha */}
-            <button
-              onClick={handleNextImage}
-              className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-black z-50 transition-colors"
-            >
-              <ChevronRight size={48} strokeWidth={0.5} />
-            </button>
-          </div>
-        )}
-      </div>
-    </>
-  );
-};
+                    const imageEl = document.createElement('img');
+                    imageEl.src = img.src;
+                    imageEl.alt = img.alt;
+                    imageEl.loading = 'lazy';
+                    imageEl.className = 'w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-95 group-hover:opacity-100';
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300';
 
-export default App;
+                    div.appendChild(imageEl);
+                    div.appendChild(overlay);
+                    galleryGrid.appendChild(div);
+                });
+            }
+        }
+
+        function filterImages() {
+            if (activeCategory === 'all') {
+                filteredImages = portfolioImages;
+            } else {
+                // Filtramos por categoría. Como todas las fotos tienen 'portfolio', 
+                // esto retornará vacío para las otras categorías por ahora.
+                filteredImages = portfolioImages.filter(img => img.category === activeCategory);
+            }
+            renderGallery();
+        }
+
+        // --- Lógica del Menú Móvil ---
+        function toggleMobileMenu() {
+            isMobileMenuOpen = !isMobileMenuOpen;
+            if (isMobileMenuOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                mobileOverlay.classList.remove('hidden');
+                mobileMenuIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'; // Icono X
+            } else {
+                closeMobileMenu();
+            }
+        }
+
+        function closeMobileMenu() {
+            isMobileMenuOpen = false;
+            sidebar.classList.add('-translate-x-full');
+            mobileOverlay.classList.add('hidden');
+            mobileMenuIcon.innerHTML = '<line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line>'; // Icono Menu
+        }
+
+        mobileMenuBtn.onclick = toggleMobileMenu;
+        mobileOverlay.onclick = closeMobileMenu;
+
+        // --- Lógica del Lightbox ---
+        function openLightbox(index) {
+            currentImageIndex = index;
+            updateLightboxImage();
+            lightbox.classList.remove('hidden');
+            // Timeout para permitir que el display:block se aplique antes de cambiar opacidad
+            setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+            document.body.classList.add('no-scroll');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                currentImageIndex = null;
+            }, 300); // Esperar transición
+            document.body.classList.remove('no-scroll');
+        }
+
+        function updateLightboxImage() {
+            const imgData = filteredImages[currentImageIndex];
+            lightboxImg.src = imgData.src;
+            lightboxImg.alt = imgData.alt;
+        }
+
+        function nextImage(e) {
+            e.stopPropagation();
+            currentImageIndex = (currentImageIndex + 1) % filteredImages.length;
+            updateLightboxImage();
+        }
+
+        function prevImage(e) {
+            e.stopPropagation();
+            currentImageIndex = (currentImageIndex - 1 + filteredImages.length) % filteredImages.length;
+            updateLightboxImage();
+        }
+
+        lightboxClose.onclick = closeLightbox;
+        lightboxNext.onclick = nextImage;
+        lightboxPrev.onclick = prevImage;
+
+        // Navegación por teclado
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.classList.contains('hidden')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextImage(e);
+            if (e.key === 'ArrowLeft') prevImage(e);
+        });
+
+        // Inicialización
+        renderMenu();
+        renderGallery();
+
+    </script>
+</body>
+</html>
